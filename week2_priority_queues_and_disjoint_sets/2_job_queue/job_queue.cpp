@@ -14,8 +14,8 @@ public:
   long id;
   long last_start_time = 0;
   long last_end_time = 0;
-  WorkerThread() : last_end_time(0),
-                   last_start_time(0)
+  WorkerThread() 
+                   
   {
   }
 
@@ -25,11 +25,6 @@ public:
   {
   }
 
-  WorkerThread(WorkerThread *workerThread) : id(workerThread->id),
-                                             last_end_time(workerThread->last_end_time),
-                                             last_start_time(workerThread->last_start_time)
-  {
-  }
   void UpdateJob(long process_time)
   {
     this->last_start_time = this->last_end_time;
@@ -66,7 +61,7 @@ public:
   {
     WorkerThread &minThread = this->GetMin();
     minThread.UpdateJob(job_time);
-    WorkerThread localMinThread = WorkerThread(minThread);
+    WorkerThread localMinThread = minThread;
     SiftDown(0);
     return localMinThread;
   }
