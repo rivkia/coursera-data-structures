@@ -60,8 +60,7 @@ int main_with_large_stack_space()
   
   for (int leaf_index = 0; leaf_index < n; leaf_index++)
   {
-    int height = 0;
-    height = calculate_height(&nodes[leaf_index], heights);
+    int height = calculate_height(&nodes[leaf_index], heights);
     maxHeight = std::max(maxHeight, height);
   }
 
