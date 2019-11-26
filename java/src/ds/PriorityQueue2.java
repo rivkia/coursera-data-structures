@@ -1,19 +1,14 @@
 package ds;
 
-public class PriorityQueue {
-    public int[] H;
+public class PriorityQueue2<T extends Comparable<T>> {
+    public T[] H;
     int size;
     int maxSize;
 
-    public PriorityQueue(int n) {
-        H = new int[n];
-        maxSize = size = n;
-
-    }
-
-    public PriorityQueue(int[] A) {
+    public PriorityQueue2(T[] A, int size, int n) {
         H = A;
-        maxSize = size = A.length;
+        size = size;
+        maxSize = n;
     }
 
     private int parent(int i) {
@@ -29,7 +24,7 @@ public class PriorityQueue {
     }
 
     private void siftUp(int i) {
-        while (i > 0 && H[parent(i)] < H[i]) {
+        while (i > 0 && H[parent(i)].compareTo(H[i]) == 0) {
             swap(H, parent(i), i);
             i = parent(i);
         }
@@ -38,10 +33,10 @@ public class PriorityQueue {
     private void siftDown(int i) {
         int maxIndex = i;
         int l = leftChild(i);
-        if (l < size && H[l] > H[maxIndex])
+        if (l < size && H[l].compareTo(H[maxIndex]) > 0)
             maxIndex = l;
         int r = rightChild(i);
-        if (r < size && H[r] > H[maxIndex])
+        if (r < size && H[r].compareTo(H[maxIndex]) > 0)
             maxIndex = r;
         if (i != maxIndex) {
             swap(H, i, maxIndex);
@@ -49,8 +44,8 @@ public class PriorityQueue {
         }
     }
 
-    private static void swap(int[] H, int i, int j) {
-        int temp = H[i];
+    private void swap(T[] H, int i, int j) {
+        T temp = H[i];
         H[i] = H[j];
         H[j] = temp;
     }
@@ -59,12 +54,12 @@ public class PriorityQueue {
         return size > 0;
     }
 
-    public int getMax() {
+    public T getMax() {
         if (size == 0) throw new Error("Empty");
         return H[0];
     }
 
-    public void insert(int p) {
+    public void insert(T p) {
         if (size == maxSize)
             throw new Error("Capacity is Full");
         size++;
@@ -72,63 +67,27 @@ public class PriorityQueue {
         siftUp(size - 1);
     }
 
-    public int extractMax() {
+    public T extractMax() {
         if (size == 0) throw new Error("Empty");
-        int result = H[0];
+        T result = H[0];
         H[0] = H[size - 1];
         size--;
         siftDown(0);
         return result;
     }
 
-    public void changePriority(int i, int p) {
-        int oldp = H[i];
+    public void changePriority(int i, T p) {
+        T oldp = H[i];
         H[i] = p;
-        if (p > oldp)
+        if (p.compareTo(oldp) > 0)
             siftUp(i);
         else
             siftDown(i);
     }
 
-    public void remove(int i) {
+   /* public void remove(int i) {
         H[i] = Integer.MAX_VALUE;
         siftUp(i);
         extractMax();
-    }
-
-    public static void heapSort(int[] A) {
-        PriorityQueue pq = new PriorityQueue(A.length);
-        for (int i = 0; i < A.length; i++) {
-            pq.insert(A[i]);
-        }
-        for (int i = A.length - 1; i >= 0; i--) {
-            A[i] = pq.extractMax();
-        }
-    }
-
-    public static PriorityQueue buildHeap(int[] A) {
-        PriorityQueue pq = new PriorityQueue(A);
-        int size = A.length;
-        for (int i =  (size-1) / 2; i >= 0; i--) {
-            pq.siftDown(i);
-        }
-        return pq;
-    }
-
-    public static void heapSortInPlace(int[] A) {
-        PriorityQueue pq = buildHeap(A);
-        for (int i = 0; i < A.length; i++) {
-            swap(A, 0, pq.size - 1);
-            pq.size--;
-            pq.siftDown(0);
-        }
-    }
-
-    public static void heapSort_partialSort(int[] A, int k) {
-        PriorityQueue pq = buildHeap(A);
-        for (int i = 0; i < k; i++) {
-            A[A.length - i - 1] = pq.extractMax();
-        }
-    }
-
+    }*/
 }

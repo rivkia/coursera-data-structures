@@ -1,5 +1,26 @@
+package week2_priority_queues_and_disjoint_sets;
+
 import java.io.*;
 import java.util.StringTokenizer;
+
+class Thread implements Comparable<Thread> {
+    int startTime;
+    int endTime;
+    int id;
+
+    public Thread(int id, int startTime, int endTime) {
+        this.id = id;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    @Override
+    public int compareTo(Thread o) {
+        if (this.endTime < o.endTime || this.endTime == o.endTime && this.id < o.id)
+            return 1;
+        return 0;
+    }
+}
 
 public class JobQueue {
     private int numWorkers;
@@ -31,6 +52,27 @@ public class JobQueue {
     }
 
     private void assignJobs() {
+        assignedWorker = new int[jobs.length];
+        startTime = new long[jobs.length];
+        Thread[] threads = new Thread[numWorkers];
+        ds.PriorityQueue2 pq = new ds.PriorityQueue2<Thread>(threads, 0, numWorkers);
+        //first jobs
+        for (int i = 0; i < numWorkers && i < jobs.length; i++) {
+            pq.insert(new Thread(i, 0, jobs[i]));
+            assignedWorker[i] = i;
+            startTime[i] = 0;
+        }
+        for (int i = numWorkers; i < jobs.length; i++) {
+            Thread firstJobFinish = (Thread) pq.extractMax();
+            firstJobFinish.startTime = firstJobFinish.endTime;
+            firstJobFinish.endTime = firstJobFinish.startTime + jobs[i];
+            assignedWorker[i] = firstJobFinish.id;
+            startTime[i] = firstJobFinish.startTime;
+            pq.insert(firstJobFinish);
+        }
+    }
+
+    private void assignJobs_naive() {
         // TODO: replace this code with a faster algorithm.
         assignedWorker = new int[jobs.length];
         startTime = new long[jobs.length];

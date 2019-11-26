@@ -1,3 +1,7 @@
+package week1_basic_data_structures;
+
+import ds.QueueLinkedList;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -25,16 +29,30 @@ class Response {
 class Buffer {
     public Buffer(int size) {
         this.size_ = size;
-        this.finish_time_ = new ArrayList<Integer>();
+        this.finish_time_ = new QueueLinkedList<Integer>();
+        this.last_finsh_time = 0;
     }
 
     public Response Process(Request request) {
         // write your code here
-        return new Response(false, -1);
+        while (!finish_time_.empty() && finish_time_.top() <= request.arrival_time)
+            finish_time_.dequeue();
+        if (finish_time_.size() == size_)
+            return new Response(true, -1);
+        if (finish_time_.empty()) {
+            last_finsh_time = request.arrival_time + request.process_time;
+            finish_time_.enqueue(request.arrival_time + request.process_time);
+            return new Response(false, request.arrival_time);
+        }
+        int lasttime = last_finsh_time;
+        last_finsh_time = lasttime + request.process_time;
+        finish_time_.enqueue(lasttime + request.process_time);
+        return new Response(false, lasttime);
     }
 
     private int size_;
-    private ArrayList<Integer> finish_time_;
+    private int last_finsh_time;
+    private QueueLinkedList<Integer> finish_time_;
 }
 
 class process_packages {

@@ -1,7 +1,8 @@
+package week3_hash_tables;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -12,6 +13,7 @@ public class PhoneBook {
     private FastScanner in = new FastScanner();
     // Keep list of all existing (i.e. not deleted yet) contacts.
     private List<Contact> contacts = new ArrayList<>();
+    private String[] phoneBooks = new String[10000000];
 
     public static void main(String[] args) {
         new PhoneBook().processQueries();
@@ -32,8 +34,22 @@ public class PhoneBook {
         System.out.println(response);
     }
 
-
     private void processQuery(Query query) {
+        if (query.type.equals("add")) {
+            phoneBooks[query.number] = query.name;
+        } else if (query.type.equals("del")) {
+            phoneBooks[query.number] = "";
+        } else {
+            String response = "not found";
+            if (phoneBooks[query.number] != null && !phoneBooks[query.number].isEmpty()) {
+                response = phoneBooks[query.number];
+            }
+            writeResponse(response);
+        }
+    }
+
+
+    private void processQuery_naive(Query query) {
         if (query.type.equals("add")) {
             // if we already have contact with such number,
             // we should rewrite contact's name
@@ -55,7 +71,7 @@ public class PhoneBook {
                 }
         } else {
             String response = "not found";
-            for (Contact contact: contacts)
+            for (Contact contact : contacts)
                 if (contact.number == query.number) {
                     response = contact.name;
                     break;

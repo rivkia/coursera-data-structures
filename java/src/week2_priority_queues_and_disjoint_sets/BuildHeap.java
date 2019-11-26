@@ -1,13 +1,14 @@
+package week2_priority_queues_and_disjoint_sets;
+
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
 public class BuildHeap {
     private int[] data;
     private List<Swap> swaps;
-
+    private int size;
     private FastScanner in;
     private PrintWriter out;
 
@@ -19,43 +20,92 @@ public class BuildHeap {
         int n = in.nextInt();
         data = new int[n];
         for (int i = 0; i < n; ++i) {
-          data[i] = in.nextInt();
+            data[i] = in.nextInt();
         }
     }
 
     private void writeResponse() {
         out.println(swaps.size());
         for (Swap swap : swaps) {
-          out.println(swap.index1 + " " + swap.index2);
+            out.println(swap.index1 + " " + swap.index2);
+        }
+    }
+
+
+    private int parent(int i) {
+        return (i - 1) / 2;
+    }
+
+    private int leftChild(int i) {
+        return 2 * i + 1;
+    }
+
+    private int rightChild(int i) {
+        return 2 * i + 2;
+    }
+
+    // min heap
+    private void siftDown(int i) {
+        int minIndex = i;
+        int l = leftChild(i);
+        if (l < size && data[l] < data[minIndex])
+            minIndex = l;
+        int r = rightChild(i);
+        if (r < size && data[r] < data[minIndex])
+            minIndex = r;
+        if (i != minIndex) {
+            swap(data, i, minIndex);
+            siftDown(minIndex);
+        }
+    }
+
+    private void swap(int[] H, int i, int j) {
+        int temp = H[i];
+        H[i] = H[j];
+        H[j] = temp;
+        swaps.add(new Swap(i, j));
+    }
+
+    public void buildHeap() {
+        for (int i = (size - 1) / 2; i >= 0; i--) {
+            siftDown(i);
         }
     }
 
     private void generateSwaps() {
-      swaps = new ArrayList<Swap>();
-      // The following naive implementation just sorts 
-      // the given sequence using selection sort algorithm
-      // and saves the resulting sequence of swaps.
-      // This turns the given array into a heap, 
-      // but in the worst case gives a quadratic number of swaps.
-      //
-      // TODO: replace by a more efficient implementation
-      for (int i = 0; i < data.length; ++i) {
-        for (int j = i + 1; j < data.length; ++j) {
-          if (data[i] > data[j]) {
-            swaps.add(new Swap(i, j));
-            int tmp = data[i];
-            data[i] = data[j];
-            data[j] = tmp;
-          }
+        swaps = new ArrayList<Swap>();
+        size= data.length;
+        buildHeap();
+    }
+
+    private void generateSwaps_naive() {
+        swaps = new ArrayList<Swap>();
+        // The following naive implementation just sorts
+        // the given sequence using selection sort algorithm
+        // and saves the resulting sequence of swaps.
+        // This turns the given array into a heap,
+        // but in the worst case gives a quadratic number of swaps.
+        //
+        // TODO: replace by a more efficient implementation
+        for (int i = 0; i < data.length; ++i) {
+            for (int j = i + 1; j < data.length; ++j) {
+                if (data[i] > data[j]) {
+                    swaps.add(new Swap(i, j));
+                    int tmp = data[i];
+                    data[i] = data[j];
+                    data[j] = tmp;
+                }
+            }
         }
-      }
     }
 
     public void solve() throws IOException {
         in = new FastScanner();
         out = new PrintWriter(new BufferedOutputStream(System.out));
-        readData();
-        generateSwaps();
+//        readData();
+        int [] A = {7,7,7,7};
+        ds.PriorityQueue.heapSort(A);
+//        generateSwaps();
         writeResponse();
         out.close();
     }

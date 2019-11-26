@@ -1,8 +1,52 @@
+package week3_hash_tables;
+
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+
+class HashTableChain {
+    private int bucketCount;
+    private int prime = 1000000007;
+    private int multiplier = 263;
+    private List<String>[] hashTable;
+
+    public HashTableChain(int bucketCount) {
+        this.bucketCount = bucketCount;
+        hashTable = new List[bucketCount];
+        for (int i = 0; i < bucketCount; i++) {
+            hashTable[i] = new ArrayList<>();
+        }
+    }
+
+    public void insertItem(String key) {
+        int index = hashFunc(key);
+        if (!hashTable[index].contains(key))
+            hashTable[index].add(key);
+    }
+
+    public void deleteItem(String key) {
+        int index = findItem(key);
+        if (index >= 0)
+            hashTable[index].remove(key);
+    }
+
+    public int findItem(String key) {
+        int index = hashFunc(key);
+        return hashTable[index].contains(key) ? index : -1;
+    }
+
+    public List<String> checkItem(int hashIndex){
+        return hashTable[hashIndex];
+    }
+
+    private int hashFunc(String s) {
+        long hash = 0;
+        for (int i = s.length() - 1; i >= 0; --i)
+            hash = (hash * multiplier + s.charAt(i)) % prime;
+        return (int) hash % bucketCount;
+    }
+}
 
 public class HashChains {
 
@@ -14,6 +58,7 @@ public class HashChains {
     private int bucketCount;
     private int prime = 1000000007;
     private int multiplier = 263;
+    HashTableChain tableChain;
 
     public static void main(String[] args) throws IOException {
         new HashChains().processQueries();
@@ -23,7 +68,7 @@ public class HashChains {
         long hash = 0;
         for (int i = s.length() - 1; i >= 0; --i)
             hash = (hash * multiplier + s.charAt(i)) % prime;
-        return (int)hash % bucketCount;
+        return (int) hash % bucketCount;
     }
 
     private Query readQuery() throws IOException {
@@ -44,6 +89,31 @@ public class HashChains {
     }
 
     private void processQuery(Query query) {
+
+        switch (query.type) {
+            case "add":
+                tableChain.insertItem(query.s);
+                break;
+            case "del":
+                tableChain.deleteItem(query.s);
+                break;
+            case "find":
+                boolean wasFound = tableChain.findItem(query.s) >= 0;
+                writeSearchResult(wasFound);
+                break;
+            case "check":
+                List<String> items= tableChain.checkItem(query.ind);
+                out.print(String.join(" ", items));
+                out.println();
+                // Uncomment the following if you want to play with the program interactively.
+                // out.flush();
+                break;
+            default:
+                throw new RuntimeException("Unknown query: " + query.type);
+        }
+    }
+
+    private void processQuery_Naive(Query query) {
         switch (query.type) {
             case "add":
                 if (!elems.contains(query.s))
@@ -74,6 +144,7 @@ public class HashChains {
         in = new FastScanner();
         out = new PrintWriter(new BufferedOutputStream(System.out));
         bucketCount = in.nextInt();
+        tableChain = new HashTableChain(bucketCount);
         int queryCount = in.nextInt();
         for (int i = 0; i < queryCount; ++i) {
             processQuery(readQuery());

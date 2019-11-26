@@ -1,3 +1,5 @@
+package week3_hash_tables;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.io.*;

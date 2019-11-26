@@ -1,5 +1,6 @@
+package week2_priority_queues_and_disjoint_sets;
+
 import java.io.*;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
@@ -29,8 +30,13 @@ public class MergingTables {
             rank = 0;
             parent = this;
         }
+
         Table getParent() {
             // find super parent and compress path
+            if (this != parent) {
+                Table parent_table = this.parent;
+                this.parent = parent_table.getParent();
+            }
             return parent;
         }
     }
@@ -43,9 +49,23 @@ public class MergingTables {
         if (realDestination == realSource) {
             return;
         }
+        int size;
+        if (realDestination.rank > realSource.rank) {
+            realDestination.numberOfRows += realSource.numberOfRows;
+            size = realDestination.numberOfRows;
+            realSource.parent = realDestination.parent;
+        } else {
+            realSource.numberOfRows += realDestination.numberOfRows;
+            size = realSource.numberOfRows;
+
+            realDestination.parent = realSource.parent;
+            if (realDestination.rank == realSource.rank)
+                realSource.rank++;
+        }
         // merge two components here
         // use rank heuristic
         // update maximumNumberOfRows
+        maximumNumberOfRows = Integer.max(maximumNumberOfRows, size);
     }
 
     public void run() {
